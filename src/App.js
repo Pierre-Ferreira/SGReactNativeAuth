@@ -20,7 +20,6 @@ class App extends Component {
     return (
       <View>
         <Header headerText="AUTHEnTIcaTion" />
-        <Text>An App!</Text>
         <LoginForm />
       </View>
     );
