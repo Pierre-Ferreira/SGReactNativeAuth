@@ -13,33 +13,46 @@ class LoginForm extends Component {
 
   onButtonPress() {
     this.setState({ error: '', loading: true });
-    // this.setState({ loading: true });
 
     const { emailText, passwordText } = this.state;
 
     firebase.auth().signInWithEmailAndPassword(emailText, passwordText)
+      .then(this.onLoginSuccess.bind(this))
       .catch(() => {
-        this.setState({ loading: false });
         firebase.auth().createUserWithEmailAndPassword(emailText, passwordText)
-          .catch(() => {
-            this.setState({ loading: false });
-            this.setState({ error: 'Authentication Failed.' });
-          });
+          .then(this.onLoginSuccess.bind(this))
+          .catch(this.onLoginFail.bind(this));
       });
-    this.setState({ loading: false });
+  }
+
+  onLoginSuccess() {
+    this.setState({
+      error: '',
+      loading: false,
+      emailText: '',
+      passwordText: ''
+    });
+  }
+
+  onLoginFail() {
+    this.setState({
+      error: 'Authentication Failed.',
+      loading: false
+    });
   }
 
   spinnerORButton() {
+console.log('this.state.loading:', this.state.loading);
     if (this.state.loading) {
-        return (<Spinner />);
-    } else {
-      return (
-        <Button onPressFN={this.onButtonPress.bind(this)}>
-          Log in
-        </Button>
-      );
+      return <Spinner size="small" />;
     }
+    return (
+      <Button onPressFN={this.onButtonPress.bind(this)}>
+        Log in
+      </Button>
+    );
   }
+
   render() {
     return (
       <Card>
@@ -71,10 +84,10 @@ class LoginForm extends Component {
   }
 }
 const styles = {
-  errorTextStyle : {
+  errorTextStyle: {
     fontSize: 20,
     alignSelf: 'center',
     color: 'red'
   }
-}
+};
 export default LoginForm;
